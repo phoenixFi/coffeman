@@ -47,6 +47,13 @@ Configure database credentials in database/config.go
 
 The server will start at http://localhost:8080
 
+| Method | Endpoint        | Description                 |
+|--------|---------------|-----------------------------|
+| **POST**   | `/users`         | Creates a new user         |
+| **GET**    | `/users`         | Retrieves all users        |
+| **GET**    | `/users/{id}`    | Retrieves a user by ID     |
+| **PUT**    | `/users/{id}`    | Updates an existing user   |
+| **DELETE** | `/users/{id}`    | Deletes a user             |
 
 
  Sending and Parsing JSON Responses/Requests
