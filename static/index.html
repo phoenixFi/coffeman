@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>CRUD на Golang</title>
+    <script>
+        // Функция загрузки списка пользователей
+        async function loadUsers() {
+            let response = await fetch("http://localhost:8080/users");
+            let users = await response.json();
+            let table = document.getElementById("users");
+            table.innerHTML = "<tr><th>ID</th><th>Имя</th><th>Email</th><th>Действия</th></tr>";
+
+            users.forEach(user => {
+                table.innerHTML += `
+                    <tr>
+                        <td>${user.ID}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td><button onclick="deleteUser(${user.ID})">Удалить</button></td>
+                    </tr>`;
+            });
+    }
+
+async function deleteUser(id) {
+    let confirmDelete = confirm("Вы уверены, что хотите удалить пользователя?");
+    if (confirmDelete) {
+        await fetch(`http://localhost:8080/users/${id}`, {
+            method: "DELETE"
+        });
+        loadUsers();
+    }
+}
+
+// Функция добавления нового пользователя
+        async function createUser() {
+            let name = prompt("Введите имя:");
+            let email = prompt("Введите email:");
+            if (name && email) {
+                await fetch("/users", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, email })
+                });
+                loadUsers(); // Перезагрузка списка
+            }
+        }
+
+
+        // Загружаем пользователей при загрузке страницы
+        window.onload = loadUsers;
+    </script>
+</head>
+<body>
+    <div class="background">
+        <div class="overlay">
+            <h1 class="welcome-text">Добро пожаловать в Coffeeman</h1>
+            <h2 class="welcome-text2">СВЕЖИЙ КОФЕ С ДОСТАВКОЙ В ГОРОДЕ АСТАНА</h2>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Список пользователей</h1>
+        <button class="add-user" onclick="createUser()">➕ Добавить пользователя</button>
+        <table id="users">
+            <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Email</th>
+                <th>Действия</th>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>
