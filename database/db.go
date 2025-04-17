@@ -18,10 +18,10 @@ func Connect() {
 	dsn := "user=postgres password=15456910 dbname=Coffeman sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("❌ Ошибка подключения:", err)
+		log.Fatal("Ошибка подключения:", err)
 	}
 
-	fmt.Println("✅ Успешное подключение к базе данных!")
+	fmt.Println("Успешное подключение к базе данных")
 
 	db.Migrator().CreateTable(&User{})
 	DB = db

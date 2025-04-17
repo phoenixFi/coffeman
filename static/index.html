@@ -1,56 +1,68 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-
-    <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8">
-    <title>CRUD на Golang</title>
+    <title>Управление продуктами | Coffeeman</title>
+    <link rel="stylesheet" href="style.css">
     <script>
-        // Функция загрузки списка пользователей
-        async function loadUsers() {
-            let response = await fetch("http://localhost:8080/users");
-            let users = await response.json();
-            let table = document.getElementById("users");
-            table.innerHTML = "<tr><th>ID</th><th>Имя</th><th>Email</th><th>Действия</th></tr>";
+        async function loadProducts() {
+            let response = await fetch("http://localhost:8081/products");
+            let products = await response.json();
+            let table = document.getElementById("products");
+            table.innerHTML = `
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Описание</th>
+                    <th>Цена</th>
+                    <th>Остаток</th>
+                    <th>Категория</th>
+                    <th>Действия</th>
+                </tr>`;
 
-            users.forEach(user => {
+            products.forEach(product => {
                 table.innerHTML += `
                     <tr>
-                        <td>${user.ID}</td>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                        <td><button onclick="deleteUser(${user.ID})">Удалить</button></td>
+                        <td>${product.id}</td>
+                        <td>${product.name}</td>
+                        <td>${product.description}</td>
+                        <td>${product.price} ₸</td>
+                        <td>${product.stock}</td>
+                        <td>${product.category_id}</td>
+                        <td>
+                            <button onclick="deleteProduct(${product.id})">Удалить</button>
+                        </td>
                     </tr>`;
             });
-    }
+        }
 
-async function deleteUser(id) {
-    let confirmDelete = confirm("Вы уверены, что хотите удалить пользователя?");
-    if (confirmDelete) {
-        await fetch(`http://localhost:8080/users/${id}`, {
-            method: "DELETE"
-        });
-        loadUsers();
-    }
-}
-
-// Функция добавления нового пользователя
-        async function createUser() {
-            let name = prompt("Введите имя:");
-            let email = prompt("Введите email:");
-            if (name && email) {
-                await fetch("/users", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name, email })
-                });
-                loadUsers(); // Перезагрузка списка
+        async function deleteProduct(id) {
+            if (confirm("Удалить этот продукт?")) {
+                await fetch(`http://localhost:8081/products/${id}`, { method: "DELETE" });
+                loadProducts();
             }
         }
 
+        async function createProduct() {
+            let name = prompt("Название продукта:");
+            let description = prompt("Описание:");
+            let price = parseFloat(prompt("Цена:"));
+            let stock = parseInt(prompt("Количество на складе:"));
+            let category_id = parseInt(prompt("ID категории:"));
 
-        // Загружаем пользователей при загрузке страницы
-        window.onload = loadUsers;
+            if (name && description && !isNaN(price) && !isNaN(stock) && !isNaN(category_id)) {
+                await fetch("http://localhost:8081/products", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, description, price, stock, category_id })
+                });
+                loadProducts();
+            } else {
+                alert("Некорректные данные");
+            }
+        }
+
+        window.onload = loadProducts;
     </script>
 </head>
 <body>
@@ -62,17 +74,19 @@ async function deleteUser(id) {
     </div>
 
     <div class="container">
-        <h1>Список пользователей</h1>
-        <button class="add-user" onclick="createUser()">➕ Добавить пользователя</button>
-        <table id="users">
+        <h1>Список продуктов</h1>
+        <button class="add-user" onclick="createProduct()">➕ Добавить продукт</button>
+        <table id="products">
             <tr>
                 <th>ID</th>
-                <th>Имя</th>
-                <th>Email</th>
+                <th>Название</th>
+                <th>Описание</th>
+                <th>Цена</th>
+                <th>Остаток</th>
+                <th>Категория</th>
                 <th>Действия</th>
             </tr>
         </table>
     </div>
 </body>
-
 </html>

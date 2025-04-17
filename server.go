@@ -33,7 +33,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(Response{"success", "Данные успешно приняты"})
 }
 
-func sd(){
+func madin(){
 	http.HandleFunc("/", handler)
 	fmt.Println("Сервер работает на порту 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
